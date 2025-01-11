@@ -37,4 +37,7 @@ Rails.application.routes.draw do
   get 'search', to: 'search#index'
   resources :list_items, only: [:create]
 
+  # handle real-time search queries for movies
+  get "movies/search", to: "movies#search"
+
 end
