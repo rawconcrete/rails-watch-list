@@ -11,7 +11,7 @@ class Movie < ApplicationRecord
 
   def check_for_bookmarks
     if bookmarks.any?
-      errors.add(:base, "cannot delete movie with bookmarks.")
+      errors.add(:base, "cannot delete films with bookmarks.")
       throw :abort
     end
   end
