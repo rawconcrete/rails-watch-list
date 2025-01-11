@@ -7,15 +7,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("movie-search");
   const searchInputEn = document.getElementById("movie-search-en");
   const resultsContainer = document.getElementById("search-results");
+  const languageToggle = document.getElementById("toggle-language");
   let debounceTimeout;
 
+  // fetch search results based on query and language
   function fetchResults(query) {
-    if (query.trim().length === 0) {
+    if (!query.trim()) {
       resultsContainer.innerHTML = "";
       return;
     }
 
-    fetch(`/movies/search?query=${encodeURIComponent(query)}`)
+    const language = languageToggle.textContent === "日本語" ? "en" : "ja";
+
+    fetch(`/movies/search?query=${encodeURIComponent(query)}&language=${language}`)
       .then(response => response.json())
       .then(results => {
         resultsContainer.innerHTML = results
@@ -27,30 +31,24 @@ document.addEventListener("DOMContentLoaded", () => {
           `)
           .join("");
 
-        // Add click listeners
+        // click event for each result
         document.querySelectorAll(".search-result").forEach(result => {
           result.addEventListener("click", () => {
-            const movieId = result.dataset.id;
-            const movieTitle = result.querySelector("strong").textContent;
-
-            // Set selected movie
-            document.getElementById("selected-movie-id").value = movieId;
-            (searchInput || searchInputEn).value = movieTitle;
-            resultsContainer.innerHTML = ""; // Clear results
+            document.getElementById("selected-movie-id").value = result.dataset.id;
+            (searchInput || searchInputEn).value = result.querySelector("strong").textContent;
+            resultsContainer.innerHTML = "";
           });
         });
       })
-      .catch(error => console.error("Error fetching search results:", error));
+      .catch(error => console.error("error fetching results:", error));
   }
 
+  // event listener for search inputs
   if (searchInput && searchInputEn) {
-    // Attach input event listeners
     [searchInput, searchInputEn].forEach(input => {
-      input.addEventListener("input", (event) => {
-        const query = event.target.value;
-
+      input.addEventListener("input", event => {
         clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(() => fetchResults(query), 500); // Debounce
+        debounceTimeout = setTimeout(() => fetchResults(event.target.value), 500);
       });
     });
   }

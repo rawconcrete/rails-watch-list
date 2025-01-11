@@ -1,27 +1,27 @@
 <div class="container py-5">
-  <!-- page heading -->
+  <!-- heading -->
   <h1 class="lang-jp">映画とかを<%= @list.name %>リストに追加</h1>
   <h1 class="lang-en d-none">add media to <%= @list.name %></h1>
   <%= simple_form_for [@list, @bookmark] do |f| %>
     <!-- instructions -->
-    <p class="text-muted lang-jp">
-      ご協力ありがとうございます。検索結果は少しお待ちください。
-    </p>
-    <p class="text-muted lang-en d-none">
-      thank you for your patience. results load shortly.
-    </p>
+    <p class="text-muted lang-jp">検索結果は少しお待ちください。</p>
+    <p class="text-muted lang-en d-none">results load shortly.</p>
     <!-- movie search input -->
     <div class="form-group">
-      <%= text_field_tag :query, params[:query] || (@bookmark.movie&.title if @bookmark.movie), placeholder: "映画を検索...", id: "movie-search", class: "form-control lang-jp" %>
-      <%= text_field_tag :query, params[:query] || (@bookmark.movie&.title if @bookmark.movie), placeholder: "search movies...", id: "movie-search-en", class: "form-control lang-en d-none" %>
+      <%= text_field_tag :query, params[:query] || @bookmark.movie&.title,
+                         placeholder: "映画を検索...", id: "movie-search", class: "form-control lang-jp" %>
+      <%= text_field_tag :query, params[:query] || @bookmark.movie&.title,
+                         placeholder: "search movies...", id: "movie-search-en", class: "form-control lang-en d-none" %>
       <div id="search-results" class="mt-2"></div>
     </div>
-    <!-- hidden movie storage -->
+    <!-- hidden movie id -->
     <%= hidden_field_tag :movie_id, params[:movie_id] || @bookmark.movie_id, id: "selected-movie-id" %>
     <!-- comment input -->
     <div class="form-group">
-      <%= f.input :comment, label: false, placeholder: "コメントを書く...", input_html: { class: "form-control lang-jp" } %>
-      <%= f.input :comment, label: false, placeholder: "write a comment...", input_html: { class: "form-control lang-en d-none" } %>
+      <%= f.input :comment, label: false, placeholder: "コメントを書く...",
+                   input_html: { class: "form-control lang-jp" } %>
+      <%= f.input :comment, label: false, placeholder: "write a comment...",
+                   input_html: { class: "form-control lang-en d-none" } %>
     </div>
     <!-- submit button -->
     <%= f.button :submit, class: "btn btn-primary lang-jp", value: "リストに追加" %>
