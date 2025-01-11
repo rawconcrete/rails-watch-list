@@ -32,4 +32,7 @@ Rails.application.routes.draw do
   # GET /lists/:list_id/bookmarks/new → bookmarks#new     (new bookmark form)
   # POST /lists/:list_id/bookmarks    → bookmarks#create  (create bookmark)
   # DELETE /bookmarks/:id             → bookmarks#destroy (delete bookmark)
+
+  # for setting up tvmaze
+  get 'search', to: 'search#index'
 end
