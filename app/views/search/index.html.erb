@@ -1,0 +1,37 @@
+<h1>Search for Movies/Shows</h1>
+<%= form_with url: search_path, method: :get, local: true do %>
+  <%= text_field_tag :query, params[:query], placeholder: "Search for media..." %>
+  <%= submit_tag "Search" %>
+<% end %>
+<% if @tmdb_results.present? %>
+  <h2>Movies</h2>
+  <% @tmdb_results.each do |movie| %>
+    <div>
+      <h3><%= movie['title'] %></h3>
+      <p><%= movie['overview'] %></p>
+      <% if movie['poster_path'].present? %>
+        <img src="https://image.tmdb.org/t/p/w500<%= movie['poster_path'] %>" alt="<%= movie['title'] %> poster" />
+      <% else %>
+        <p>No poster available.</p>
+      <% end %>
+    </div>
+  <% end %>
+<% else %>
+  <p>No movies found.</p>
+<% end %>
+<% if @tvmaze_results.present? %>
+  <h2>Shows</h2>
+  <% @tvmaze_results.each do |show| %>
+    <div>
+      <h3><%= show['name'] %></h3>
+      <p><%= show['summary'] %></p>
+      <% if show['image']&.dig('medium').present? %>
+        <img src="<%= show['image']['medium'] %>" alt="<%= show['name'] %> poster" />
+      <% else %>
+        <p>No poster available.</p>
+      <% end %>
+    </div>
+  <% end %>
+<% else %>
+  <p>No shows found.</p>
+<% end %>

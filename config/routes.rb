@@ -35,4 +35,6 @@ Rails.application.routes.draw do
 
   # for setting up tvmaze
   get 'search', to: 'search#index'
+  resources :list_items, only: [:create]
+
 end
