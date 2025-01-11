@@ -8,14 +8,22 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-url = "https://tmdb.lewagon.com/movie/top_rated"
-response = URI.open(url).read
-movies = JSON.parse(response)
+require 'open-uri'
+require 'json'
 
-movies['results'].each do |movie|
-  Movie.create!(
-    title: movie['title'],
-    overview: movie['overview'],
-    poster_url: "https://image.tmdb.org/t/p/w500#{movie['poster_path']}",
-    rating: movie['vote_average']
-  )
+class SearchService
+  TMDB_BASE_URL = "https://tmdb.lewagon.com"
+  TVMAZE_BASE_URL = "http://api.tvmaze.com"
+
+  def self.search_tmdb(query)
+    url = "#{TMDB_BASE_URL}/search/movie?query=#{URI.encode(query)}"
+    response = URI.open(url).read
+    JSON.parse(response)['results']
+  end
+
+  def self.search_tvmaze(query)
+    url = "#{TVMAZE_BASE_URL}/search/shows?q=#{URI.encode(query)}"
+    response = URI.open(url).read
+    JSON.parse(response).map { |result| result['show'] }
+  end
+end
