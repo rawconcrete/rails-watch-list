@@ -1,2 +1,21 @@
-<h1>Lists#show</h1>
-<p>Find me in app/views/lists/show.html.erb</p>
+<div class="container py-5">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1><%= @list.name %></h1>
+    <%= link_to "add a film", new_list_bookmark_path(@list), class: "btn btn-primary" %>
+  </div>
+  <%# bookmarks %>
+  <div class="row">
+    <div class="col-12 col-sm-6 col-md-4 mb-3">
+      <div class="card">
+        <img src="<%= bookmark.movie.poster_url %>" class="card-img-top" alt="<% bookmark.movie.title %>">
+        <div class="card-body">
+          <h5 class="card-title"><%= bookmark.movie.title %></h5>
+          <p class="card-text"><%= bookmark.comment %></p>
+          <% link_to "delete", bookmark_path(bookmark),
+          data: { turbo_method: :delete, turbo_confirm: "are you sure you want to delete this?" },
+          class: "btn btn-danger" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
