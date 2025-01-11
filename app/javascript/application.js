@@ -5,50 +5,53 @@ import "bootstrap"
 import "@popperjs/core"
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("movie-search");
+  const searchInputEn = document.getElementById("movie-search-en");
   const resultsContainer = document.getElementById("search-results");
   let debounceTimeout;
 
-  if (searchInput) {
-    searchInput.addEventListener("input", (event) => {
-      const query = event.target.value.trim();
+  function fetchResults(query) {
+    if (query.trim().length === 0) {
+      resultsContainer.innerHTML = "";
+      return;
+    }
 
-      // clear previous timeout
-      clearTimeout(debounceTimeout);
+    fetch(`/movies/search?query=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(results => {
+        resultsContainer.innerHTML = results
+          .map(movie => `
+            <div class="search-result" data-id="${movie.id}" data-source="${movie.source}">
+              <strong>${movie.title}</strong> (${movie.release_date || "Unknown"})
+              <p>${movie.overview}</p>
+            </div>
+          `)
+          .join("");
 
-      // set new timeout
-      debounceTimeout = setTimeout(async () => {
-        if (query.length === 0) {
-          resultsContainer.innerHTML = "";
-          return;
-        }
-
-        // fetch results
-        const response = await fetch(`/movies/search?query=${encodeURIComponent(query)}`);
-        const results = await response.json();
-
-        // display results
-        resultsContainer.innerHTML = results.map(movie => `
-          <div class="search-result" data-id="${movie.id}" data-source="${movie.source}">
-            <strong>${movie.title}</strong> (${movie.release_date || "Unknown"})
-            <p>${movie.overview}</p>
-            <small>Source: ${movie.source}</small>
-          </div>
-        `).join("");
-
-        // add click event listeners
+        // Add click listeners
         document.querySelectorAll(".search-result").forEach(result => {
           result.addEventListener("click", () => {
             const movieId = result.dataset.id;
-            const movieSource = result.dataset.source;
             const movieTitle = result.querySelector("strong").textContent;
 
-            // set selected
-            document.getElementById("selected-movie-id").value = `${movieSource}:${movieId}`;
-            searchInput.value = movieTitle;
+            // Set selected movie
+            document.getElementById("selected-movie-id").value = movieId;
+            (searchInput || searchInputEn).value = movieTitle;
             resultsContainer.innerHTML = ""; // Clear results
           });
         });
-      }, 500); // wait 500ms after last keystroke
+      })
+      .catch(error => console.error("Error fetching search results:", error));
+  }
+
+  if (searchInput && searchInputEn) {
+    // Attach input event listeners
+    [searchInput, searchInputEn].forEach(input => {
+      input.addEventListener("input", (event) => {
+        const query = event.target.value;
+
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => fetchResults(query), 500); // Debounce
+      });
     });
   }
 });

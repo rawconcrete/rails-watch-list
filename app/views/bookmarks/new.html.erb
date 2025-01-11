@@ -13,7 +13,7 @@
     <!-- movie search input -->
     <div class="form-group">
       <%= text_field_tag :query, params[:query] || (@bookmark.movie&.title if @bookmark.movie), placeholder: "映画を検索...", id: "movie-search", class: "form-control lang-jp" %>
-      <%= text_field_tag :query, params[:query] || (@bookmark.movie&.title if @bookmark.movie), placeholder: "search movies...", id: "movie-search", class: "form-control lang-en d-none" %>
+      <%= text_field_tag :query, params[:query] || (@bookmark.movie&.title if @bookmark.movie), placeholder: "search movies...", id: "movie-search-en", class: "form-control lang-en d-none" %>
       <div id="search-results" class="mt-2"></div>
     </div>
     <!-- hidden movie storage -->
