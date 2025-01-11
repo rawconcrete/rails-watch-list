@@ -17,7 +17,7 @@ class ListsController < ApplicationController
     if @list.save
       redirect_to list_path(@list), notice: 'list was successfully created.'
     else
-      render :new, status: unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -26,4 +26,3 @@ class ListsController < ApplicationController
   def list_params
     params.require(:list).permit(:name)
   end
-end
