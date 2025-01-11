@@ -1,0 +1,13 @@
+<%= form_with url: search_path, method: :get, local: true do %>
+  <%= hidden_field_tag :language, "ja", id: "language-field" %>
+  <%= text_field_tag :query, params[:query], placeholder: "映画を検索...", class: "lang-jp" %>
+  <%= text_field_tag :query, params[:query], placeholder: "Search for a movie...", class: "lang-en d-none" %>
+  <%= submit_tag "検索", class: "btn btn-secondary lang-jp" %>
+  <%= submit_tag "Search", class: "btn btn-secondary lang-en d-none" %>
+<% end %>
+<script>
+  document.getElementById("toggle-language")?.addEventListener("click", function () {
+    const isEnglish = this.textContent === "English";
+    document.getElementById("language-field").value = isEnglish ? "en" : "ja";
+  });
+</script>

@@ -1,29 +1,29 @@
 class ListsController < ApplicationController
+  require 'open-uri'
+  require 'json'
+  require 'cgi'
+
   def index
     @lists = List.all
-  end
-
-  def show
-    @list = List.find(params[:id])
-    @bookmark = Bookmark.new
+    @search_results = search_movies(params[:query], params[:language]) if params[:query].present?
   end
 
   def new
     @list = List.new
   end
 
-  def create
-    @list = List.new(list_params)
-    if @list.save
-      redirect_to list_path(@list), notice: 'list was successfully created.'
-    else
-      render :new, status: :unprocessable_entity
-    end
+  def show
+    @list = List.find(params[:id])
   end
 
   private
 
-  def list_params
-    params.require(:list).permit(:name)
+  def search_movies(query, language = "en")
+    url = "https://tmdb.lewagon.com/search/movie?query=#{CGI.escape(query)}&language=#{language}"
+    response = URI.open(url).read
+    JSON.parse(response)['results']
+  rescue => e
+    Rails.logger.error("TMDB API Error: #{e.message}")
+    []
   end
 end

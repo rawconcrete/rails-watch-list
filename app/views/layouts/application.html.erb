@@ -5,12 +5,21 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-
   <body>
-    <%= yield %>
+    <div class="container">
+      <%= render "shared/page_header" %>
+      <%= yield %>
+    </div>
+    <script>
+      document.getElementById("toggle-language").addEventListener("click", function () {
+        const isEnglish = this.textContent === "English";
+        document.querySelectorAll(".lang-en").forEach(el => el.classList.toggle("d-none", !isEnglish));
+        document.querySelectorAll(".lang-jp").forEach(el => el.classList.toggle("d-none", isEnglish));
+        this.textContent = isEnglish ? "日本語" : "English";
+      });
+    </script>
   </body>
 </html>

@@ -1,15 +1,64 @@
 <div class="container py-5">
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <h1>My Lists</h1>
-    <%= link_to "create a new list", new_list_path, class: "btn btn-primary" %>
-  </div>
-  <%# cards %>
+  <!-- Film Search -->
+  <h2 class="lang-jp">
+    <span class="furigana" data-furigana="えいが">映画</span>を
+    <span class="furigana" data-furigana="さがす">探す</span>
+  </h2>
+  <h2 class="lang-en d-none">Find Movies</h2>
+  <%= form_with url: search_path, method: :get, local: true do %>
+    <%= text_field_tag :query, params[:query], placeholder: "映画を検索...", class: "lang-jp" %>
+    <%= text_field_tag :query, params[:query], placeholder: "Search for a movie...", class: "lang-en d-none" %>
+    <%= submit_tag "検索", class: "btn btn-secondary lang-jp" %>
+    <%= submit_tag "Search", class: "btn btn-secondary lang-en d-none" %>
+  <% end %>
+  <!-- Search Results -->
+  <% if @search_results.present? %>
+    <h3 class=<div class="d-flex align-items-center justify-content-between mb-3">
+      <h1 class="lang-jp">
+        <h1 class="lang-jp">
+          <%= link_to root_path, class: "text-decoration-none" do %>
+            <span class="furigana" data-furigana="えいがかん">映画巻</span>
+          <% end %>
+        </h1>
+      </div>
+      "lang-jp">
+      <span class="furigana" data-furigana="けんさく">検索</span>
+      <span class="furigana" data-furigana="けっか">結果</span>
+    </h3>
+    <h3 class="lang-en d-none">Search Results</h3>
+    <% @search_results.each do |movie| %>
+      <div class="mb-3">
+        <h5><%= movie['title'] %></h5>
+        <p><%= movie['overview'] %></p>
+        <% if movie['poster_path'] %>
+          <img src="https://image.tmdb.org/t/p/w200<%= movie['poster_path'] %>" alt="<%= movie['title'] %> poster">
+        <% end %>
+        <%= button_to "この映画でリストを作成", lists_path, method: :post, params: {
+          list: { name: movie['title'] },
+          bookmark: { movie_id: movie['id'] }
+        }, class: "btn btn-success lang-jp" %>
+        <%= button_to "Create List with This Movie", lists_path, method: :post, params: {
+          list: { name: movie['title'] },
+          bookmark: { movie_id: movie['id'] }
+        }, class: "btn btn-success lang-en d-none" %>
+      </div>
+    <% end %>
+  <% end %>
+  <!-- Lists -->
+  <h2 class="lang-jp">
+    <span class="furigana" data-furigana="きそん">既存</span>の
+    <span class="furigana" data-furigana="りすと">リスト</span>
+  </h2>
+  <h2 class="lang-en d-none">Existing Lists</h2>
   <div class="row">
     <% @lists.each do |list| %>
       <div class="col-12 col-sm-6 col-md-4 mb-3">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title"><%= link_to list.name, list_path(list), class: "text-decoration-none" %></h5>
+            <h5 class="card-title">
+              <%= link_to list.name, list_path(list), class: "text-decoration-none lang-jp" %>
+              <%= link_to list.name, list_path(list), class: "text-decoration-none lang-en d-none" %>
+            </h5>
           </div>
         </div>
       </div>
