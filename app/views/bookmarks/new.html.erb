@@ -1,7 +1,13 @@
 <div class="container py-5">
   <h1>add a movie to <%= @list.name %></h1>
   <%= simple_form_for [@list, @bookmark] do |f| %>
-    <%= f.association :movie %>
+    <!-- movie search input -->
+    <div class="form-group">
+      <%= text_field_tag :query, params[:query] || (@bookmark.movie&.title if @bookmark.movie), placeholder: "Search for a movie...", id: "movie-search", class: "form-control" %>
+      <div id="search-results" class="mt-2"></div>
+    </div>
+    <!-- hidden selected movie storage -->
+    <%= hidden_field_tag :movie_id, params[:movie_id] || @bookmark.movie_id, id: "selected-movie-id" %>
     <%= f.input :comment %>
     <%= f.button :submit, class: "btn btn-primary" %>
   <% end %>
