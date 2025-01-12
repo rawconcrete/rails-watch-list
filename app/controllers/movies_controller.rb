@@ -17,37 +17,18 @@ class MoviesController < ApplicationController
 
   private
 
-  def fetch_tmdb_tv_results(query, language)
-    url = "https://tmdb.lewagon.com/search/tv?query=#{CGI.escape(query)}&language=#{language}"
-    response = URI.open(url).read
-    JSON.parse(response)["results"].map do |tv_show|
-      {
-        id: tv_show["id"],
-        source: "tmdb_tv",
-        title: tv_show["name"], # localized title
-        release_date: tv_show["first_air_date"],
-        overview: tv_show["overview"]&.gsub(/<\/?[^>]*>/, "") # remove HTML tags
-      }
-    end
-  rescue => e
-    Rails.logger.error("TMDB TV API Error: #{e.message}")
-    []
-  end
-
-
-
   def fetch_tmdb_results(query, language)
     url = "https://tmdb.lewagon.com/search/movie?query=#{CGI.escape(query)}&language=#{language}"
     response = URI.open(url).read
     JSON.parse(response)["results"].map do |movie|
-      next if language == "ja" && movie["original_language"] != "ja" # skip non-Japanese results
+      next if language == "ja" && movie["original_language"] != "ja" # skip non-Japanese result
 
       {
         id: movie["id"],
         source: "tmdb",
         title: movie["title"], # localised title
         release_date: movie["release_date"],
-        overview: movie["overview"]&.gsub(/<\/?[^>]*>/, "") # remove HTML tags
+        overview: sanitize_text(movie["overview"]) # sanitise overview
       }
     end.compact
   rescue => e
@@ -55,6 +36,22 @@ class MoviesController < ApplicationController
     []
   end
 
+  def fetch_tmdb_tv_results(query, language)
+    url = "https://tmdb.lewagon.com/search/tv?query=#{CGI.escape(query)}&language=#{language}"
+    response = URI.open(url).read
+    JSON.parse(response)["results"].map do |tv_show|
+      {
+        id: tv_show["id"],
+        source: "tmdb_tv",
+        title: tv_show["name"], # localised title
+        release_date: tv_show["first_air_date"],
+        overview: sanitize_text(tv_show["overview"]) # sanitise overview
+      }
+    end
+  rescue => e
+    Rails.logger.error("TMDB TV API Error: #{e.message}")
+    []
+  end
 
   def fetch_tvmaze_results(query)
     url = "https://api.tvmaze.com/search/shows?q=#{CGI.escape(query)}"
@@ -66,12 +63,18 @@ class MoviesController < ApplicationController
         source: "tvmaze",
         title: show["name"],
         release_date: show["premiered"],
-        overview: show["summary"]&.gsub(/<\/?[^>]*>/, "") # remove HTML tags
+        overview: sanitize_text(show["summary"]) # sanitise overview
       }
     end
   rescue => e
     Rails.logger.error("TVMaze API Error: #{e.message}")
     []
   end
+
+  # helper to sanitise text
+  def sanitize_text(text)
+    text&.gsub(/<\/?[^>]*>/, "")&.strip # remove HTML tags and trim whitespace
+  end
+
 
 end
