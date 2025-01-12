@@ -1,3 +1,4 @@
+# todo: fix text sanitising to remove <p> tags
 class MoviesController < ApplicationController
   require 'open-uri'
   require 'json'
@@ -21,14 +22,14 @@ class MoviesController < ApplicationController
     url = "https://tmdb.lewagon.com/search/movie?query=#{CGI.escape(query)}&language=#{language}"
     response = URI.open(url).read
     JSON.parse(response)["results"].map do |movie|
-      next if language == "ja" && movie["original_language"] != "ja" # skip non-Japanese result
+      next if language == "ja" && movie["original_language"] != "ja" # skip non-Japanese results for Japanese queries
 
       {
         id: movie["id"],
         source: "tmdb",
         title: movie["title"], # localised title
         release_date: movie["release_date"],
-        overview: sanitize_text(movie["overview"]) # sanitise overview
+        overview: sanitize_text(movie["overview"]) # sanitised overview
       }
     end.compact
   rescue => e
@@ -45,7 +46,7 @@ class MoviesController < ApplicationController
         source: "tmdb_tv",
         title: tv_show["name"], # localised title
         release_date: tv_show["first_air_date"],
-        overview: sanitize_text(tv_show["overview"]) # sanitise overview
+        overview: sanitize_text(tv_show["overview"]) # sanitised overview
       }
     end
   rescue => e
@@ -63,7 +64,7 @@ class MoviesController < ApplicationController
         source: "tvmaze",
         title: show["name"],
         release_date: show["premiered"],
-        overview: sanitize_text(show["summary"]) # sanitise overview
+        overview: sanitize_text(show["summary"]) # sanitised overview
       }
     end
   rescue => e
@@ -71,10 +72,11 @@ class MoviesController < ApplicationController
     []
   end
 
+
   # helper to sanitise text
   def sanitize_text(text)
-    text&.gsub(/<\/?[^>]*>/, "")&.strip # remove HTML tags and trim whitespace
+    sanitized = ActionView::Base.full_sanitizer.sanitize(text)&.strip
+    puts "Sanitized Text: #{sanitized}" # log the sanitised text
+    sanitized
   end
-
-
 end
