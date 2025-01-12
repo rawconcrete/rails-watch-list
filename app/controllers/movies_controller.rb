@@ -18,7 +18,7 @@ class MoviesController < ApplicationController
   private
 
   def fetch_tmdb_tv_results(query, language)
-    url = "https://api.themoviedb.org/3/search/tv?query=#{CGI.escape(query)}&language=#{language}&api_key=#{ENV['TMDB_API_KEY']}"
+    url = "https://tmdb.lewagon.com/search/tv?query=#{CGI.escape(query)}&language=#{language}"
     response = URI.open(url).read
     JSON.parse(response)["results"].map do |tv_show|
       {
@@ -33,6 +33,7 @@ class MoviesController < ApplicationController
     Rails.logger.error("TMDB TV API Error: #{e.message}")
     []
   end
+
 
   def fetch_tmdb_results(query, language)
     url = "https://tmdb.lewagon.com/search/movie?query=#{CGI.escape(query)}&language=#{language}"
