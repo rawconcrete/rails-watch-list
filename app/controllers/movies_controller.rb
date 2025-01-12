@@ -5,12 +5,14 @@ class MoviesController < ApplicationController
 
   def search
     query = params[:query]
-    language = params[:language] || "en"
+    language = params[:language] || "en" # default if not provided
 
-    tmdb_results = fetch_tmdb_results(query, language)
+    tmdb_movie_results = fetch_tmdb_results(query, language)
+    tmdb_tv_results = fetch_tmdb_tv_results(query, language)
     tvmaze_results = language == "en" ? fetch_tvmaze_results(query) : []
 
-    render json: (tmdb_results + tvmaze_results).take(10)
+    # combine, limit results
+    render json: (tmdb_movie_results + tmdb_tv_results + tvmaze_results).take(10)
   end
 
   private
